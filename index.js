@@ -52,11 +52,14 @@ function renderListToDo(todo) {
   const h3Text = document.createTextNode(todo.title)
   const button = document.createElement("button")
   const buttonText = document.createTextNode("INCOMPLETE")
+  const button2 = document.createElement("button")
+  const button2Text = document.createTextNode("delete")
 
-  todoList.append(li, button)
-  li.append(h3)
+  todoList.append(li)
+  li.append(h3, button, button2)
   h3.append(h3Text)
   button.append(buttonText)
+  button2.append(button2Text)
 
   button.addEventListener("click", function () {
     const updateStatus = {
@@ -79,10 +82,21 @@ function renderListToDo(todo) {
       .then(function (json) {
         todo.completed = updateStatus.completed
         if (todo.completed) {
-          button.innerHTML = "INCOMPLETE"
-        } else {
           button.innerHTML = "COMPLETE"
+        } else {
+          button.innerHTML = "INCOMPLETE"
         }
+      })
+  })
+
+  button2.addEventListener('click', function () {
+      const url = "http://localhost:3000/todos/" + todo.id
+      const options = {
+          method: 'DELETE'
+      }
+      fetch(url, options)
+      .then(function(){
+          li.remove()
       })
   })
 }
