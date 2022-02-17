@@ -51,10 +51,38 @@ function renderListToDo(todo) {
   const h3 = document.createElement("h3")
   const h3Text = document.createTextNode(todo.title)
   const button = document.createElement("button")
-  const buttonText = document.createTextNode("incomplete")
+  const buttonText = document.createTextNode("INCOMPLETE")
 
   todoList.append(li, button)
   li.append(h3)
   h3.append(h3Text)
   button.append(buttonText)
+
+  button.addEventListener("click", function () {
+    const updateStatus = {
+      completed: !todo.completed,
+    }
+
+    const options = {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updateStatus),
+    }
+
+    const url = "http://localhost:3000/todos/" + todo.id
+    fetch(url, options)
+      .then(function (response) {
+        return response.json()
+      })
+      .then(function (json) {
+        todo.completed = updateStatus.completed
+        if (todo.completed) {
+          button.innerHTML = "INCOMPLETE"
+        } else {
+          button.innerHTML = "COMPLETE"
+        }
+      })
+  })
 }
