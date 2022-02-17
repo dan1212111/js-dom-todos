@@ -1,0 +1,83 @@
+const pokeForm = document.querySelector(".poke-form");
+const pokeList = document.querySelector(".poke-list");
+
+function addPokemon(pokemon) {
+  const liEl = document.createElement("li");
+  const imgEl = document.createElement("img");
+  const h2El = document.createElement("h2");
+  
+  const deleteEl = document.createElement("button")
+  deleteEl.innerText = 'Delete'
+
+  deleteEl.addEventListener('click', function() {
+    console.log('button clicked:', pokemon)
+
+    const url = "http://localhost:3000/pokemons/" + pokemon.id
+
+    fetch(url, {method:'DELETE'})
+    //remove the pokemon here!
+      .then(function(){
+        console.log("Deleted!")
+        liEl.remove()
+      })
+  })
+
+  const likeEl = document.createElement('button')
+  if(pokemon.liked) {
+    likeEl.innerText = 'Unlike'
+  }
+  else {
+    likeEl.innerText = 'Like'
+  }
+
+  const likedText = document.createElement('p')
+  likedText.innerText = "you like them!"
+  likedText.setAttribute('style', 'color:pink;font-weight:bold;')  
+  if(!pokemon.liked) {
+    likedText.hidden = true
+  }
+  
+  likeEl.addEventListener('click', function() {
+    
+    //toggling the liked property - if it's false(or undefined) this makes it true
+    //if its true, this makes false
+    const updatedPokemon = {
+      liked: !pokemon.liked
+    }
+
+    const options = {
+      method: 'PATCH', //doing a partial update
+      headers: {
+        'Content-Type' : 'application/json'
+      },
+      body: JSON.stringify(updatedPokemon) //only updating the liked property
+    }
+
+    const url = "http://localhost:3000/pokemons/" + pokemon.id
+    fetch(url, options)
+      .then(function(response) {
+        return response.json()
+      }).then(function(json) {
+
+        //Update the pokemon object
+        pokemon.liked = updatedPokemon.liked
+
+        //Update the button text
+        if(pokemon.liked) {
+          likeEl.innerText = 'Unlike'
+        }
+        else {
+          likeEl.innerText = 'Like'
+        }
+
+        //We hide or show the "liked text"
+        //if not liked - hide that element
+        //if it is liked - show the element
+        if(pokemon.liked) {
+          likedText.hidden = false  
+        }
+        else {
+          likedText.hidden = true  
+        }
+      })
+  })
